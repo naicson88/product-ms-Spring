@@ -30,7 +30,7 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(value = {NoSuchElementException.class})
 	public ResponseEntity<Object> handleNotFoundlErros(NoSuchElementException e){
 		
-		ApiExceptions ex = new ApiExceptions(e.getMessage(), e, HttpStatus.NOT_FOUND, ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));	
+		ApiExceptions ex = new ApiExceptions(e.getMessage(), e.getCause(), HttpStatus.NOT_FOUND, ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));	
 		return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
 	}
 	

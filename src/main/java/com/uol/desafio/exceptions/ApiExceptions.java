@@ -13,6 +13,7 @@ public class ApiExceptions {
 	
 	
 	
+	
 	public ApiExceptions(String msg, Throwable cause, HttpStatus httpStatus, ZonedDateTime time) {
 		super();
 		this.msg = msg;

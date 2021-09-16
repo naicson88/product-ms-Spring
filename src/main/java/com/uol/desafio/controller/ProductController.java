@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,12 +61,21 @@ public class ProductController {
 	
 	@GetMapping("/products/search")
 	@ResponseBody
-	public ResponseEntity<List<Product>> searchProductsWithFilter(@RequestParam(required = false) double min_value,
-			@RequestParam(required = false) double max_value, @RequestParam(required = false) String q){
+	public ResponseEntity<List<Product>> searchProductsWithFilter(@RequestParam(required = false) Double min_value,
+			@RequestParam(required = false) Double max_value, @RequestParam(required = false) String q){
 		
 		List<Product> products = prodService.searchWithFilters(min_value, max_value, q);
 		
 		return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
 	}
+	
+	@DeleteMapping("products/{id}")
+	public ResponseEntity<Object> deleteProduct(@PathVariable("id") Long productId){
+		
+		prodService.deleteProduct(productId);
+		
+		return new ResponseEntity<>("Successfully deleted",HttpStatus.OK);
+	}
+	
 	
 }

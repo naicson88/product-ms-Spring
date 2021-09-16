@@ -62,6 +62,7 @@ public class ProductSpecification implements Specification<Product>{
                 		));           
             }			
 		}
+		
 		return builder.and(predicates.toArray(new Predicate[0]));
 		
 	}
