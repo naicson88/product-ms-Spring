@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -148,7 +147,6 @@ public class ProductServiceTest {
 	public void searchProductWithFilter() {
 		
 		Product product1 = new Product("List1", "Descricao1", 5.98);
-		Product product2 = new Product("List2", "Descricao2", 33.11);
 		Product product3 = new Product("List1", "Descricao3", 4.30);
 		
 		List<Product> list = Arrays.asList(product1,product3 );
