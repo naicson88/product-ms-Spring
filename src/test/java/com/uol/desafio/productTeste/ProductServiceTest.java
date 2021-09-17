@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,39 +15,34 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.uol.desafio.entity.Product;
 import com.uol.desafio.repository.ProductRepository;
 import com.uol.desafio.service.ProductService;
+import com.uol.desafio.service.ProductServiceImpl;
 import com.uol.desafio.specification.ProductSpecification;
+import com.uol.desafio.specification.SearchCriteria;
+import com.uol.desafio.specification.SearchOperation;
 
-/*@ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
-x*/
-@SpringBootTest
-@AutoConfigureMockMvc
+
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 public class ProductServiceTest {
 	
-
+	
 	ProductService prodService;
 	
 	@MockBean
 	ProductRepository repository;
-	
+		
 	@BeforeEach
 	public void setUp() {
-		this.prodService = new ProductService();
-		
+		this.prodService = new ProductServiceImpl(repository);
 	}
-	
 	
 	@Test
 	public void saveAProduct() {
@@ -77,6 +73,7 @@ public class ProductServiceTest {
 		Product editedProduct = new Product("After Edit", "After Description", 5.38);
 		editedProduct.setId(1L);
 		
+		Mockito.when(repository.findById(product.getId())).thenReturn(Optional.of(product));
 		Mockito.when(repository.save(product)).thenReturn(editedProduct);
 		
 		Product prodAfterEdition = prodService.editProduct(product, 1L);
@@ -152,12 +149,17 @@ public class ProductServiceTest {
 		
 		Product product1 = new Product("List1", "Descricao1", 5.98);
 		Product product2 = new Product("List2", "Descricao2", 33.11);
-		Product product3 = new Product("List3", "Descricao3", 4.30);
+		Product product3 = new Product("List1", "Descricao3", 4.30);
+		
+		List<Product> list = Arrays.asList(product1,product3 );
+		
 		ProductSpecification spec = new ProductSpecification();
+		spec.add(new SearchCriteria("price", SearchOperation.GREATER_THAN_EQUAL, 4.20));		 
+		spec.add(new SearchCriteria("price", SearchOperation.LESS_THAN_EQUAL, 20.66));
 		
-		Mockito.when(repository.findAll(spec)).thenReturn(Arrays.asList(product1, product2));
-		
-		List<Product> productList = prodService.searchWithFilters(5.98, 40.12, "List");
+		Mockito.when(repository.findAll(spec)).thenReturn(list);
+			
+		List<Product> productList = prodService.searchWithFilters(4.20, 20.66, null );
 		
 		assertEquals(2, productList.size());
 		assertThat(productList.get(0).getPrice() > 5.97);
@@ -191,13 +193,13 @@ public class ProductServiceTest {
 	@Test
 	public void deleteAProductById() {
 		Product product = new Product("Teste3", "Descricao3", 41.51);
-		Product prodSaved = repository.save(product);
+		product.setId(1L);
 		
-		prodService.deleteProduct(prodSaved.getId());
+		Mockito.when(repository.existsById(product.getId())).thenReturn(true);
 		
-		boolean prodDeleted = repository.existsById(prodSaved.getId());
+		Assertions.assertDoesNotThrow( () -> prodService.deleteProduct(product.getId()));
 		
-		assertThat(prodDeleted).isFalse();
+		Mockito.verify(repository, Mockito.times(1)).deleteById(product.getId());
 		
 	}
 	

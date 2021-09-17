@@ -46,18 +46,13 @@ public class ProductSpecification implements Specification<Product>{
                         root.get(criteria.getKey()), criteria.getValue().toString()));
             } 
 			 
-			else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
-                predicates.add(builder.like(
-                        builder.lower(root.get(criteria.getKey())),
-                        "%" + criteria.getValue().toString().toLowerCase() + "%"));
-            }
 			
 			else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
                 predicates.add( 
                 		builder.or(builder.like(root.get("name"),
                         "%" + criteria.getValue().toString().toLowerCase() + "%"),
                 				
-                				builder.like(root.get("name"),
+                				builder.like(root.get("description"),
                                 "%" + criteria.getValue().toString().toLowerCase() + "%")
                 		));           
             }			
